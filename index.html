@@ -1,92 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>Tenant Pulse Survey</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
-body{font-family:system-ui;background:#eef1ef;padding:24px}
-.card{max-width:720px;margin:auto;background:#fff;padding:32px;border-radius:16px}
-button{padding:12px 16px;border-radius:8px;border:none;background:#2f3a3b;color:#fff}
-.preview{background:#f3f4f2;padding:10px;border-radius:8px;margin-bottom:8px}
-.rating{font-size:24px}
-.star{cursor:pointer;color:#ddd}
-.star.active{color:#6b8f8b}
+body {
+  font-family: system-ui, -apple-system, "Noto Sans JP", sans-serif;
+  background: #eef1ef;
+  padding: 24px;
+}
+.card {
+  max-width: 760px;
+  margin: auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+}
+.rating { font-size: 24px; }
+.star { cursor: pointer; color: #ccc; }
+.star.active { color: #6b8f8b; }
+.preview {
+  background: #f3f4f2;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.kpi {
+  background: #eef4f3;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
 </style>
 </head>
 
 <body>
 
 <div class="card" id="surveyView">
-<h2>Tenant Pulse Survey</h2>
-<div class="rating" data-k="overall"></div>
-<textarea id="pos" placeholder="Comment"></textarea>
-<button onclick="submitSurvey()">Submit</button>
+  <h2>Tenant Pulse Survey</h2>
+  <div class="rating" data-k="overall"></div>
+  <textarea id="pos" placeholder="Comment"></textarea>
+  <button onclick="submitSurvey()">Submit</button>
 
-<div style="margin-top:10px;cursor:pointer" onclick="adminLogin()">Admin login</div>
+  <div style="margin-top:12px; cursor:pointer" onclick="adminLogin()">
+    Admin login
+  </div>
 </div>
 
-<div class="card" id="adminView" style="display:none">
-<h2>Admin Dashboard</h2>
-<div id="status"></div>
-<div id="comments"></div>
-<button onclick="startNewSurvey()">Start New Survey</button>
-<button onclick="logout()">Logout</button>
+<div class="card" id="adminView" style="display:none;">
+  <h2>Admin Dashboard</h2>
+
+  <div class="kpis">
+    <div class="kpi"><div id="kRespondents">–</div>Respondents</div>
+    <div class="kpi"><div id="kComposite">–</div>Composite</div>
+    <div class="kpi"><div id="kSurvey">–</div>Survey</div>
+  </div>
+
+  <div id="dashboardMessage" style="margin:12px 0;color:#6b7280;"></div>
+  <div id="comments"></div>
+
+  <button onclick="startNewSurvey()">Start New Survey</button>
+  <button onclick="logout()">Logout</button>
 </div>
 
 <script>
-const GAS_URL="https://script.google.com/macros/s/AKfycbwPkwfdUP60oudF_cOScisYzPukka9gF792ky2fT2SIbgBMVXMco2Szaf9xEUDsYe2p/exec";
+const GAS_URL =
+  "https://script.google.com/macros/s/AKfycbwPkwfdUP60oudF_cOScisYzPukka9gF792ky2fT2SIbgBMVXMco2Szaf9xEUDsYe2p/exec";
 
-document.querySelectorAll(".rating").forEach(r=>{
-  for(let i=1;i<=5;i++){
-    const s=document.createElement("span");
-    s.textContent="★";
-    s.className="star";
-    s.onclick=()=>{[...r.children].forEach((x,j)=>x.classList.toggle("active",j<i));r.dataset.value=i;}
+/* stars */
+document.querySelectorAll(".rating").forEach(r => {
+  for (let i = 1; i <= 5; i++) {
+    const s = document.createElement("span");
+    s.textContent = "★";
+    s.className = "star";
+    s.onclick = () => {
+      [...r.children].forEach((x,j)=>x.classList.toggle("active", j<i));
+      r.dataset.value = i;
+    };
     r.appendChild(s);
   }
 });
 
-function submitSurvey(){
-  fetch(GAS_URL,{
-    method:"POST",
-    body:JSON.stringify({
-      type:"submitSurvey",
-      role:"tenant",
-      org:"",
-      unit:"",
-      scores:{overall:document.querySelector(".rating").dataset.value||0},
-      positive:pos.value,
-      negative:""
+function submitSurvey() {
+  fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      type: "submitSurvey",
+      role: "tenant",
+      scores: { overall: document.querySelector(".rating").dataset.value || 0 },
+      positive: pos.value,
+      negative: ""
     })
-  }).then(()=>alert("Submitted"));
+  }).then(() => alert("Submitted"));
 }
 
-function adminLogin(){
-  if(prompt("Admin password")==="admin123"){
-    surveyView.style.display="none";
-    adminView.style.display="block";
+function adminLogin() {
+  if (prompt("Admin password") === "admin123") {
+    surveyView.style.display = "none";
+    adminView.style.display = "block";
     loadDashboard();
   }
 }
 
-function loadDashboard(){
-  fetch(GAS_URL+"?dashboardData=1")
-    .then(r=>r.json())
-    .then(d=>{
-      status.textContent =
-        d.note || `Survey: ${d.survey} | Respondents: ${d.respondents} | Score: ${d.composite}`;
-      comments.innerHTML=d.comments.map(c=>`<div class="preview">${c.jp}<br><small>${c.en}</small></div>`).join("") ||
-        "<em>No comments yet</em>";
+function loadDashboard() {
+  fetch(GAS_URL + "?dashboardData=1")
+    .then(r => r.json())
+    .then(d => {
+      kRespondents.textContent = d.respondents ?? "–";
+      kComposite.textContent = d.composite ?? "–";
+      kSurvey.textContent = d.activeSurvey ?? "–";
+      dashboardMessage.textContent = d.message || "";
+
+      comments.innerHTML = d.comments.length
+        ? d.comments.map(c =>
+            `<div class="preview">${c.jp}<br><small>${c.en}</small></div>`
+          ).join("")
+        : "<em>No comments yet</em>";
     });
 }
 
-function startNewSurvey(){
-  fetch(GAS_URL+"?newSurvey=1").then(()=>alert("New survey started"));
+function startNewSurvey() {
+  fetch(GAS_URL + "?newSurvey=1")
+    .then(() => {
+      alert("New survey started");
+      loadDashboard();
+    });
 }
 
-function logout(){location.reload();}
+function logout() { location.reload(); }
 </script>
 
 </body>
