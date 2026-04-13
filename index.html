@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Tenant Pulse Survey</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+                   "Noto Sans JP", sans-serif;
+      background: #f5f6f4;
+      color: #1f2933;
+      margin: 0;
+      padding: 24px;
+    }
+
+    .card {
+      max-width: 560px;
+      margin: auto;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 24px 28px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 60px;
+      padding: 10px;
+      margin-top: 6px;
+      font-family: inherit;
+    }
+
+    .total {
+      text-align: right;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: #2f3a3b;
+      color: #fff;
+      font-size: 15px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>テナント満足度調査 / Tenant Pulse</h1>
+
+  <label>空調・室内環境 / Comfort
+    <input type="range" min="0" max="100" value="0" class="score">
+  </label>
+
+  <label>清掃・衛生 / Cleanliness
+    <input type="range" min="0" max="100" value="0" class="score">
+  </label>
+
+  <label>管理対応・運営 / Operations
+    <input type="range" min="0" max="100" value="0" class="score">
+  </label>
+
+  <label>安全・セキュリティ / Security
+    <input type="range" min="0" max="100" value="0" class="score">
+  </label>
+
+  <label>共用部・設備 / Amenities
+    <input type="range" min="0" max="100" value="0" class="score">
+  </label>
+
+  <label>総合・その他 / Other
+    <input type="range" min="0" max="100" value="0" class="score">
+  </label>
+
+  <div class="total">
+    合計 / Total: <span id="total">0</span> / 100
+  </div>
+
+  <label>良かった点 / What you liked
+    <textarea id="positive"></textarea>
+  </label>
+
+  <label>改善点 / What to improve
+    <textarea id="negative"></textarea>
+  </label>
+
+  <button onclick="submitSurvey()">送信 / Submit</button>
+</div>
+
+<script>
+  const scores = document.querySelectorAll('.score');
+  const totalEl = document.getElementById('total');
+
+  scores.forEach(s => s.addEventListener('input', updateTotal));
+
+  function updateTotal() {
+    let total = 0;
+    scores.forEach(s => total += Number(s.value));
+    totalEl.textContent = total;
+  }
+
+  function submitSurvey() {
+    if (Number(totalEl.textContent) !== 100) {
+      alert("合計100ポイントになるよう調整してください。");
+      return;
+    }
+
+    fetch("YOUR_GAS_WEB_APP_URL", {
+      method: "POST",
+      body: JSON.stringify({
+        scores: [...scores].map(s => s.value),
+        positive: document.getElementById("positive").value,
+        negative: document.getElementById("negative").value
+      })
+    }).then(() => {
+      alert("ご協力ありがとうございました。");
+    });
+  }
+</script>
+
+</body>
+</html>
