@@ -7,331 +7,118 @@
 
 <style>
 :root{
-  --bg:#eef1ef;
-  --card:#ffffff;
-  --primary:#2f3a3b;
-  --accent:#6b8f8b;
-  --accent-soft:#e4efed;
-  --border:#dfe4e1;
-  --text:#1f2933;
-  --muted:#6b7280;
+  --bg:#eef1ef; --card:#ffffff; --primary:#2f3a3b;
+  --accent:#6b8f8b; --border:#dfe4e1; --text:#1f2933; --muted:#6b7280;
 }
-
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  padding:24px 16px;
-}
-
-.card{
-  max-width:780px;
-  margin:auto;
-  background:var(--card);
-  border-radius:16px;
-  padding:32px;
-  box-shadow:0 12px 30px rgba(0,0,0,.12);
-}
-
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;background:var(--bg);padding:24px 16px;}
+.card{max-width:760px;margin:auto;background:var(--card);border-radius:16px;padding:32px;box-shadow:0 12px 30px rgba(0,0,0,.12);}
 h1{text-align:center;font-weight:500;}
 .subtitle{text-align:center;font-size:13px;color:var(--muted);margin-bottom:20px;}
-
-.section{display:none;}
-.section.active{display:block;}
-
+.section{display:none;} .section.active{display:block;}
 .progress{text-align:right;font-size:12px;color:var(--muted);}
-.section-title{font-size:16px;font-weight:500;margin:14px 0;}
-
-input,select,textarea{
-  width:100%;
-  padding:12px;
-  border-radius:8px;
-  border:1px solid var(--border);
-  font-size:14px;
-  margin-bottom:10px;
-}
-
+input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;}
 textarea{resize:none;}
-
-button{
-  padding:14px;
-  border:none;
-  border-radius:10px;
-  background:var(--primary);
-  color:#fff;
-  font-size:15px;
-  cursor:pointer;
-}
-
-button.secondary{
-  background:#e5e7eb;
-  color:#374151;
-}
-
-.actions{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-}
-
-.rating{
-  display:flex;
-  gap:6px;
-  font-size:26px;
-  margin-bottom:16px;
-}
-
-.star{
-  cursor:pointer;
-  color:#d1d5db;
-}
-.star.active{color:var(--accent);}
-
-.preview{
-  font-size:12px;
-  background:#f3f4f2;
-  padding:8px 10px;
-  border-radius:8px;
-  margin-bottom:10px;
-  color:#374151;
-}
-
-/* ADMIN */
-.kpis{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-}
-.kpi{
-  background:var(--accent-soft);
-  padding:16px;
-  border-radius:12px;
-  text-align:center;
-}
-.kpi-value{font-size:26px;font-weight:600;}
-.kpi-label{font-size:12px;color:var(--muted);}
-
-.comment{
-  background:#f9fafb;
-  padding:12px;
-  border-radius:10px;
-  margin-bottom:8px;
-  font-size:14px;
-}
-
-.action-row{
-  display:grid;
-  grid-template-columns:2fr 1fr 1fr auto;
-  gap:8px;
-  margin-bottom:8px;
-}
+button{padding:14px;border:none;border-radius:10px;background:var(--primary);color:#fff;font-size:15px;cursor:pointer;}
+button.secondary{background:#e5e7eb;color:#374151;}
+.rating{display:flex;gap:6px;font-size:26px;margin-bottom:16px;}
+.star{cursor:pointer;color:#d1d5db;} .star.active{color:var(--accent);}
+.preview{font-size:12px;background:#f3f4f2;padding:8px;border-radius:8px;margin-bottom:10px;}
 </style>
 </head>
 
 <body>
 
-<!-- ================= SURVEY ================= -->
 <div class="card" id="survey">
-
 <h1>Tenant Pulse Survey</h1>
-<div class="subtitle">
-建物のご利用体験についてお聞かせください<br>
-Please share your experience with the building
-</div>
+<div class="subtitle">建物のご利用体験についてお聞かせください</div>
 
-<!-- STEP 1 -->
 <div class="section active">
   <div class="progress">Step 1 / 3</div>
-  <div class="section-title">あなたの立場 / Your role</div>
-
   <select id="role">
-    <option value="">選択してください / Please select</option>
-    <option value="tenant">Tenant / テナント</option>
-    <option value="visitor">Visitor / 来訪者</option>
-    <option value="na">Rather not say / 回答しない</option>
+    <option value="">Select / 選択</option>
+    <option value="tenant">Tenant</option>
+    <option value="visitor">Visitor</option>
+    <option value="na">Rather not say</option>
   </select>
-
-  <input id="org" placeholder="テナント名・会社名（任意）">
-  <input id="unit" placeholder="区画・フロア（任意）">
-
-  <div class="actions">
-    <div></div>
-    <button onclick="next()">Next</button>
-  </div>
+  <input id="org" placeholder="Company / Tenant (optional)">
+  <input id="unit" placeholder="Unit / Floor (optional)">
+  <button onclick="next()">Next</button>
 </div>
 
-<!-- STEP 2 -->
 <div class="section">
   <div class="progress">Step 2 / 3</div>
-  <div class="section-title">満足度 / Satisfaction</div>
-
-  <div>空調・室内環境 / Comfort</div><div class="rating" data-k="comfort"></div>
-  <div>清掃・衛生 / Cleanliness</div><div class="rating" data-k="clean"></div>
-  <div>管理対応・運営 / Operations</div><div class="rating" data-k="ops"></div>
-  <div>安全・セキュリティ / Security</div><div class="rating" data-k="sec"></div>
-  <div>共用部・設備 / Amenities</div><div class="rating" data-k="amen"></div>
-  <div>総合評価 / Overall</div><div class="rating" data-k="overall"></div>
-
-  <div class="actions">
-    <button class="secondary" onclick="prev()">Back</button>
-    <button onclick="next()">Next</button>
-  </div>
+  <div>Comfort</div><div class="rating" data-k="comfort"></div>
+  <div>Cleanliness</div><div class="rating" data-k="cleanliness"></div>
+  <div>Operations</div><div class="rating" data-k="operations"></div>
+  <div>Security</div><div class="rating" data-k="security"></div>
+  <div>Amenities</div><div class="rating" data-k="amenities"></div>
+  <div>Overall</div><div class="rating" data-k="overall"></div>
+  <button class="secondary" onclick="prev()">Back</button>
+  <button onclick="next()">Next</button>
 </div>
 
-<!-- STEP 3 -->
 <div class="section">
   <div class="progress">Step 3 / 3</div>
-
-  <textarea id="pos" placeholder="良かった点 / What did you enjoy?"
-    maxlength="140" oninput="translateLive(this,'posT')"></textarea>
+  <textarea id="pos" placeholder="What did you enjoy?" maxlength="140"
+    oninput="translateLive(this,'posT')"></textarea>
   <div id="posT" class="preview"></div>
 
-  <textarea id="neg" placeholder="改善してほしい点 / What should be improved?"
-    maxlength="140" oninput="translateLive(this,'negT')"></textarea>
+  <textarea id="neg" placeholder="What can be improved?" maxlength="140"
+    oninput="translateLive(this,'negT')"></textarea>
   <div id="negT" class="preview"></div>
 
-  <div class="actions">
-    <button class="secondary" onclick="prev()">Back</button>
-    <button onclick="submitSurvey()">Submit</button>
-  </div>
+  <button class="secondary" onclick="prev()">Back</button>
+  <button onclick="submitSurvey()">Submit</button>
 </div>
 
-<div style="text-align:center;font-size:12px;color:#6b7280;cursor:pointer;margin-top:14px"
-onclick="adminLogin()">管理者ログイン / Admin login</div>
-</div>
-
-<!-- ================= ADMIN ================= -->
-<div class="card" id="admin" style="display:none;">
-
-<h1>Building Experience Dashboard</h1>
-<div class="subtitle">Live data from current survey run</div>
-
-<div class="kpis">
-  <div class="kpi"><div class="kpi-value" id="kRespondents">–</div><div class="kpi-label">Respondents</div></div>
-  <div class="kpi"><div class="kpi-value" id="kComposite">–</div><div class="kpi-label">Composite score</div></div>
-  <div class="kpi"><div class="kpi-value">Tenants + Visitors</div><div class="kpi-label">Excludes anonymous</div></div>
-</div>
-
-<h3>AI Executive Summary</h3>
-<div class="comment" id="aiSummary">Loading…</div>
-
-<h3>Recent Comments (JP / EN)</h3>
-<div id="commentList"></div>
-
-<h3>Action Tracker</h3>
-<div id="actions"></div>
-<button onclick="addAction()">+ Add action</button>
-
-<div style="margin-top:20px">
-  <button onclick="startNewSurvey()">Start New Survey</button>
-  <button onclick="logout()">Logout</button>
-</div>
-
+<div style="text-align:center;margin-top:12px;font-size:12px;cursor:pointer"
+ onclick="adminLogin()">Admin login</div>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
 const GAS_URL="https://script.google.com/macros/s/AKfycbwPkwfdUP60oudF_cOScisYzPukka9gF792ky2fT2SIbgBMVXMco2Szaf9xEUDsYe2p/exec";
 
-/* ================= SURVEY STEPS ================= */
-let idx=0;
-const parts=document.querySelectorAll(".section");
-function next(){parts[idx++].classList.remove("active");parts[idx].classList.add("active");}
-function prev(){parts[idx--].classList.remove("active");parts[idx].classList.add("active");}
+let i=0; const sections=document.querySelectorAll(".section");
+function next(){sections[i++].classList.remove("active");sections[i].classList.add("active");}
+function prev(){sections[i--].classList.remove("active");sections[i].classList.add("active");}
 
-/* ================= STAR RATINGS ================= */
 document.querySelectorAll(".rating").forEach(r=>{
   for(let i=1;i<=5;i++){
     const s=document.createElement("span");
-    s.textContent="★";
-    s.className="star";
-    s.onclick=()=>[...r.children].forEach((x,j)=>x.classList.toggle("active",j<i));
+    s.textContent="★"; s.className="star";
+    s.onclick=()=>{[...r.children].forEach((x,j)=>x.classList.toggle("active",j<i));r.dataset.value=i;};
     r.appendChild(s);
   }
 });
 
-/* ================= TRANSLATION ================= */
 function translateLive(input,target){
-  if(!input.value){
-    document.getElementById(target).textContent="";
-    return;
-  }
+  if(!input.value){document.getElementById(target).textContent="";return;}
   fetch(GAS_URL+"?translate="+encodeURIComponent(input.value))
-    .then(r=>r.text())
-    .then(t=>{
-      document.getElementById(target).textContent="Translation preview: "+t;
-    });
+    .then(r=>r.text()).then(t=>document.getElementById(target).textContent=t);
 }
 
-/* ================= SUBMIT SURVEY ================= */
 function submitSurvey(){
-  alert("ご協力ありがとうございました\nThank you for your feedback");
-  location.reload();
+  const scores={};
+  document.querySelectorAll(".rating").forEach(r=>scores[r.dataset.k]=Number(r.dataset.value||0));
+
+  fetch(GAS_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      type:"submitSurvey",
+      role:role.value,
+      org:org.value,
+      unit:unit.value,
+      scores:scores,
+      positive:pos.value,
+      negative:neg.value
+    })
+  }).then(()=>{alert("Thank you");location.reload();});
 }
 
-/* ================= ADMIN ================= */
 function adminLogin(){
   const pw=prompt("Admin password");
-  if(pw!=="admin123"){alert("Incorrect password");return;}
-  survey.style.display="none";
-  admin.style.display="block";
-  loadDashboard();
+  if(pw==="admin123") window.location.href=GAS_URL+"?dashboard=1";
 }
-
-function logout(){location.reload();}
-
-/* ================= DASHBOARD ================= */
-function loadDashboard(){
-  fetch(GAS_URL+"?dashboard=1")
-    .then(r=>r.json())
-    .then(d=>{
-      kRespondents.textContent=d.respondents;
-      kComposite.textContent=d.composite;
-      aiSummary.textContent=d.summary;
-      commentList.innerHTML="";
-      d.comments.forEach(c=>{
-        commentList.innerHTML+=`<div class="comment">${c.jp}<br><small>${c.en}</small></div>`;
-      });
-    });
-}
-
-/* ================= ACTION TRACKER ================= */
-let actions=[
-  {text:"AC system review – Zone B",owner:"BM",status:"In progress"},
-  {text:"Lift peak hour study",owner:"Ops",status:"Open"}
-];
-
-function renderActions(){
-  actionsEl=document.getElementById("actions");
-  actionsEl.innerHTML="";
-  actions.forEach((a,i)=>{
-    actionsEl.innerHTML+=`
-    <div class="action-row">
-      <input value="${a.text}" onchange="actions[${i}].text=this.value">
-      <input value="${a.owner}" onchange="actions[${i}].owner=this.value">
-      <select onchange="actions[${i}].status=this.value">
-        <option ${a.status==="Open"?"selected":""}>Open</option>
-        <option ${a.status==="In progress"?"selected":""}>In progress</option>
-        <option ${a.status==="Done"?"selected":""}>Done</option>
-      </select>
-      <button onclick="actions.splice(${i},1);renderActions()">✕</button>
-    </div>`;
-  });
-}
-
-function addAction(){
-  actions.push({text:"",owner:"",status:"Open"});
-  renderActions();
-}
-
-/* ================= SURVEY CONTROL ================= */
-function startNewSurvey(){
-  fetch(GAS_URL+"?newSurvey=1")
-    .then(()=>alert("New survey started"));
-}
-
-renderActions();
 </script>
 
 </body>
