@@ -11,7 +11,7 @@
   --accent:#6b8f8b; --border:#dfe4e1; --text:#1f2933; --muted:#6b7280;
 }
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;background:var(--bg);padding:24px 16px;}
-.card{max-width:760px;margin:auto;background:var(--card);border-radius:16px;padding:32px;box-shadow:0 12px 30px rgba(0,0,0,.12);}
+.card{max-width:780px;margin:auto;background:var(--card);border-radius:16px;padding:32px;box-shadow:0 12px 30px rgba(0,0,0,.12);}
 h1{text-align:center;font-weight:500;}
 .subtitle{text-align:center;font-size:13px;color:var(--muted);margin-bottom:20px;}
 .section{display:none;} .section.active{display:block;}
@@ -23,12 +23,17 @@ button.secondary{background:#e5e7eb;color:#374151;}
 .rating{display:flex;gap:6px;font-size:26px;margin-bottom:16px;}
 .star{cursor:pointer;color:#d1d5db;} .star.active{color:var(--accent);}
 .preview{font-size:12px;background:#f3f4f2;padding:8px;border-radius:8px;margin-bottom:10px;}
+
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
+.kpi{background:#eef4f3;padding:16px;border-radius:12px;text-align:center;}
+.kpi-value{font-size:26px;font-weight:600;}
 </style>
 </head>
 
 <body>
 
-<div class="card" id="survey">
+<!-- ================= SURVEY ================= -->
+<div class="card" id="surveyView">
 <h1>Tenant Pulse Survey</h1>
 <div class="subtitle">建物のご利用体験についてお聞かせください</div>
 
@@ -75,12 +80,29 @@ button.secondary{background:#e5e7eb;color:#374151;}
  onclick="adminLogin()">Admin login</div>
 </div>
 
+<!-- ================= ADMIN ================= -->
+<div class="card" id="adminView" style="display:none;">
+<h1>Admin Dashboard</h1>
+<div class="subtitle">Live survey data</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="kpi-value" id="kRespondents">–</div>Respondents</div>
+  <div class="kpi"><div class="kpi-value" id="kComposite">–</div>Composite score</div>
+  <div class="kpi"><div class="kpi-value" id="kSurvey">–</div>Active survey</div>
+</div>
+
+<div id="comments"></div>
+
+<button onclick="startNewSurvey()">Start New Survey</button>
+<button onclick="logout()">Logout</button>
+</div>
+
 <script>
 const GAS_URL="https://script.google.com/macros/s/AKfycbwPkwfdUP60oudF_cOScisYzPukka9gF792ky2fT2SIbgBMVXMco2Szaf9xEUDsYe2p/exec";
 
-let i=0; const sections=document.querySelectorAll(".section");
-function next(){sections[i++].classList.remove("active");sections[i].classList.add("active");}
-function prev(){sections[i--].classList.remove("active");sections[i].classList.add("active");}
+let step=0; const sections=document.querySelectorAll(".section");
+function next(){sections[step++].classList.remove("active");sections[step].classList.add("active");}
+function prev(){sections[step--].classList.remove("active");sections[step].classList.add("active");}
 
 document.querySelectorAll(".rating").forEach(r=>{
   for(let i=1;i<=5;i++){
@@ -100,25 +122,44 @@ function translateLive(input,target){
 function submitSurvey(){
   const scores={};
   document.querySelectorAll(".rating").forEach(r=>scores[r.dataset.k]=Number(r.dataset.value||0));
-
   fetch(GAS_URL,{
     method:"POST",
     body:JSON.stringify({
       type:"submitSurvey",
-      role:role.value,
-      org:org.value,
-      unit:unit.value,
-      scores:scores,
-      positive:pos.value,
-      negative:neg.value
+      role:role.value, org:org.value, unit:unit.value,
+      scores:scores, positive:pos.value, negative:neg.value
     })
   }).then(()=>{alert("Thank you");location.reload();});
 }
 
 function adminLogin(){
   const pw=prompt("Admin password");
-  if(pw==="admin123") window.location.href=GAS_URL+"?dashboard=1";
+  if(pw==="admin123"){
+    surveyView.style.display="none";
+    adminView.style.display="block";
+    loadDashboard();
+  } else alert("Incorrect password");
 }
+
+function loadDashboard(){
+  fetch(GAS_URL+"?dashboardData=1")
+    .then(r=>r.json())
+    .then(d=>{
+      kRespondents.textContent=d.respondents;
+      kComposite.textContent=d.composite;
+      kSurvey.textContent=d.survey;
+      comments.innerHTML=d.comments.map(
+        c=>`<div class="preview">${c.jp}<br><small>${c.en}</small></div>`
+      ).join("");
+    });
+}
+
+function startNewSurvey(){
+  fetch(GAS_URL+"?newSurvey=1")
+    .then(()=>alert("New survey started"));
+}
+
+function logout(){location.reload();}
 </script>
 
 </body>
