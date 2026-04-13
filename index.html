@@ -1,237 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>Tenant Pulse Survey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-  :root {
-    --bg: #f3f4f2;
-    --card: #ffffff;
-    --primary: #2f3a3b;
-    --accent: #5f7c7a;
-    --border: #e2e4e1;
-    --text: #1f2933;
-    --muted: #6b7280;
-  }
+:root{
+  --bg:#eef1ef;
+  --card:#ffffff;
+  --primary:#2f3a3b;
+  --accent:#6b8f8b;
+  --accent-soft:#e4efed;
+  --border:#dfe4e1;
+  --text:#1f2933;
+  --muted:#6b7280;
+}
 
-  * {
-    box-sizing: border-box;
-  }
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding:24px 16px;
+}
 
-  body {
-    margin: 0;
-    font-family:
-      -apple-system,
-      BlinkMacSystemFont,
-      "Hiragino Kaku Gothic ProN",
-      "Noto Sans JP",
-      "Segoe UI",
-      sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    padding: 24px 16px;
-  }
+.card{
+  max-width:780px;
+  margin:auto;
+  background:var(--card);
+  border-radius:16px;
+  padding:32px;
+  box-shadow:0 12px 30px rgba(0,0,0,.12);
+}
 
-  .card {
-    max-width: 600px;
-    margin: auto;
-    background: var(--card);
-    border-radius: 14px;
-    padding: 28px 30px 32px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  }
+h1{text-align:center;font-weight:500;}
+.subtitle{text-align:center;font-size:13px;color:var(--muted);margin-bottom:20px;}
 
-  h1 {
-    font-size: 20px;
-    font-weight: 500;
-    text-align: center;
-    margin-bottom: 8px;
-    letter-spacing: 0.02em;
-  }
+.section{display:none;}
+.section.active{display:block;}
 
-  .subtitle {
-    text-align: center;
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 24px;
-    line-height: 1.6;
-  }
+.progress{text-align:right;font-size:12px;color:var(--muted);}
+.section-title{font-size:16px;font-weight:500;margin:14px 0;}
 
-  .item {
-    margin-bottom: 22px;
-  }
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  font-size:14px;
+  margin-bottom:10px;
+}
 
-  .label {
-    font-size: 14px;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-  }
+textarea{resize:none;}
 
-  .label span {
-    color: var(--muted);
-    font-size: 12px;
-  }
+button{
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  background:var(--primary);
+  color:#fff;
+  font-size:15px;
+  cursor:pointer;
+}
 
-  input[type="range"] {
-    width: 100%;
-    accent-color: var(--accent);
-  }
+button.secondary{
+  background:#e5e7eb;
+  color:#374151;
+}
 
-  .total {
-    margin-top: 18px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
-    text-align: right;
-    font-size: 14px;
-  }
+.actions{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
 
-  .total strong {
-    font-weight: 600;
-  }
+.rating{
+  display:flex;
+  gap:6px;
+  font-size:26px;
+  margin-bottom:16px;
+}
 
-  textarea {
-    width: 100%;
-    margin-top: 6px;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    font-family: inherit;
-    font-size: 13px;
-    resize: none;
-  }
+.star{
+  cursor:pointer;
+  color:#d1d5db;
+}
+.star.active{color:var(--accent);}
 
-  button {
-    margin-top: 26px;
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: none;
-    background: var(--primary);
-    color: #fff;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    letter-spacing: 0.03em;
-  }
+.preview{
+  font-size:12px;
+  background:#f3f4f2;
+  padding:8px 10px;
+  border-radius:8px;
+  margin-bottom:10px;
+  color:#374151;
+}
 
-  button:hover {
-    background: #3b4849;
-  }
+/* ADMIN */
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+.kpi{
+  background:var(--accent-soft);
+  padding:16px;
+  border-radius:12px;
+  text-align:center;
+}
+.kpi-value{font-size:26px;font-weight:600;}
+.kpi-label{font-size:12px;color:var(--muted);}
+
+.comment{
+  background:#f9fafb;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:8px;
+  font-size:14px;
+}
+
+.action-row{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr auto;
+  gap:8px;
+  margin-bottom:8px;
+}
 </style>
 </head>
+
 <body>
 
-<div class="card">
-  <h1>Tenant Pulse Survey</h1>
-  <div class="subtitle">
-    今回重視された項目に、合計100ポイントを配分してください。<br>
-    Please distribute a total of 100 points across the areas below.
-  </div>
+<!-- ================= SURVEY ================= -->
+<div class="card" id="survey">
 
-  <!-- Sliders -->
-  <div class="item">
-    <div class="label">
-      空調・室内環境 / Comfort & Indoor Environment
-      <span>0–25</span>
-    </div>
-    <input type="range" min="0" max="25" value="0" class="score">
-  </div>
+<h1>Tenant Pulse Survey</h1>
+<div class="subtitle">
+建物のご利用体験についてお聞かせください<br>
+Please share your experience with the building
+</div>
 
-  <div class="item">
-    <div class="label">
-      清掃・衛生 / Cleanliness & Hygiene
-      <span>0–20</span>
-    </div>
-    <input type="range" min="0" max="20" value="0" class="score">
-  </div>
+<!-- STEP 1 -->
+<div class="section active">
+  <div class="progress">Step 1 / 3</div>
+  <div class="section-title">あなたの立場 / Your role</div>
 
-  <div class="item">
-    <div class="label">
-      管理対応・運営 / Operations & Responsiveness
-      <span>0–20</span>
-    </div>
-    <input type="range" min="0" max="20" value="0" class="score">
-  </div>
+  <select id="role">
+    <option value="">選択してください / Please select</option>
+    <option value="tenant">Tenant / テナント</option>
+    <option value="visitor">Visitor / 来訪者</option>
+    <option value="na">Rather not say / 回答しない</option>
+  </select>
 
-  <div class="item">
-    <div class="label">
-      安全・セキュリティ / Safety & Security
-      <span>0–15</span>
-    </div>
-    <input type="range" min="0" max="15" value="0" class="score">
-  </div>
+  <input id="org" placeholder="テナント名・会社名（任意）">
+  <input id="unit" placeholder="区画・フロア（任意）">
 
-  <div class="item">
-    <div class="label">
-      共用部・設備 / Common Areas & Amenities
-      <span>0–10</span>
-    </div>
-    <input type="range" min="0" max="10" value="0" class="score">
+  <div class="actions">
+    <div></div>
+    <button onclick="next()">Next</button>
   </div>
+</div>
 
-  <div class="item">
-    <div class="label">
-      総合・その他 / Overall & Other
-      <span>0–10</span>
-    </div>
-    <input type="range" min="0" max="10" value="0" class="score">
+<!-- STEP 2 -->
+<div class="section">
+  <div class="progress">Step 2 / 3</div>
+  <div class="section-title">満足度 / Satisfaction</div>
+
+  <div>空調・室内環境 / Comfort</div><div class="rating" data-k="comfort"></div>
+  <div>清掃・衛生 / Cleanliness</div><div class="rating" data-k="clean"></div>
+  <div>管理対応・運営 / Operations</div><div class="rating" data-k="ops"></div>
+  <div>安全・セキュリティ / Security</div><div class="rating" data-k="sec"></div>
+  <div>共用部・設備 / Amenities</div><div class="rating" data-k="amen"></div>
+  <div>総合評価 / Overall</div><div class="rating" data-k="overall"></div>
+
+  <div class="actions">
+    <button class="secondary" onclick="prev()">Back</button>
+    <button onclick="next()">Next</button>
   </div>
+</div>
 
-  <div class="total">
-    合計 / Total: <strong><span id="total">0</span> / 100</strong>
+<!-- STEP 3 -->
+<div class="section">
+  <div class="progress">Step 3 / 3</div>
+
+  <textarea id="pos" placeholder="良かった点 / What did you enjoy?"
+    maxlength="140" oninput="translateLive(this,'posT')"></textarea>
+  <div id="posT" class="preview"></div>
+
+  <textarea id="neg" placeholder="改善してほしい点 / What should be improved?"
+    maxlength="140" oninput="translateLive(this,'negT')"></textarea>
+  <div id="negT" class="preview"></div>
+
+  <div class="actions">
+    <button class="secondary" onclick="prev()">Back</button>
+    <button onclick="submitSurvey()">Submit</button>
   </div>
+</div>
 
-  <!-- Free text -->
-  <div class="item">
-    <div class="label">
-      良かった点 / What did you enjoy?
-    </div>
-    <textarea id="positive" maxlength="140"></textarea>
-  </div>
+<div style="text-align:center;font-size:12px;color:#6b7280;cursor:pointer;margin-top:14px"
+onclick="adminLogin()">管理者ログイン / Admin login</div>
+</div>
 
-  <div class="item">
-    <div class="label">
-      改善してほしい点 / What should be improved?
-    </div>
-    <textarea id="negative" maxlength="140"></textarea>
-  </div>
+<!-- ================= ADMIN ================= -->
+<div class="card" id="admin" style="display:none;">
 
-  <button onclick="submitSurvey()">
-    送信する / Submit
-  </button>
+<h1>Building Experience Dashboard</h1>
+<div class="subtitle">Live data from current survey run</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="kpi-value" id="kRespondents">–</div><div class="kpi-label">Respondents</div></div>
+  <div class="kpi"><div class="kpi-value" id="kComposite">–</div><div class="kpi-label">Composite score</div></div>
+  <div class="kpi"><div class="kpi-value">Tenants + Visitors</div><div class="kpi-label">Excludes anonymous</div></div>
+</div>
+
+<h3>AI Executive Summary</h3>
+<div class="comment" id="aiSummary">Loading…</div>
+
+<h3>Recent Comments (JP / EN)</h3>
+<div id="commentList"></div>
+
+<h3>Action Tracker</h3>
+<div id="actions"></div>
+<button onclick="addAction()">+ Add action</button>
+
+<div style="margin-top:20px">
+  <button onclick="startNewSurvey()">Start New Survey</button>
+  <button onclick="logout()">Logout</button>
+</div>
+
 </div>
 
 <script>
-  const scores = document.querySelectorAll(".score");
-  const totalEl = document.getElementById("total");
+/* ================= CONFIG ================= */
+const GAS_URL="https://script.google.com/macros/s/AKfycbwPkwfdUP60oudF_cOScisYzPukka9gF792ky2fT2SIbgBMVXMco2Szaf9xEUDsYe2p/exec";
 
-  scores.forEach(s => s.addEventListener("input", updateTotal));
+/* ================= SURVEY STEPS ================= */
+let idx=0;
+const parts=document.querySelectorAll(".section");
+function next(){parts[idx++].classList.remove("active");parts[idx].classList.add("active");}
+function prev(){parts[idx--].classList.remove("active");parts[idx].classList.add("active");}
 
-  function updateTotal() {
-    let total = 0;
-    scores.forEach(s => total += Number(s.value));
-    totalEl.textContent = total;
+/* ================= STAR RATINGS ================= */
+document.querySelectorAll(".rating").forEach(r=>{
+  for(let i=1;i<=5;i++){
+    const s=document.createElement("span");
+    s.textContent="★";
+    s.className="star";
+    s.onclick=()=>[...r.children].forEach((x,j)=>x.classList.toggle("active",j<i));
+    r.appendChild(s);
   }
+});
 
-  function submitSurvey() {
-    if (Number(totalEl.textContent) !== 100) {
-      alert(
-        "合計が100ポイントになるよう調整してください。\n" +
-        "Please adjust the sliders so the total equals exactly 100 points."
-      );
-      return;
-    }
-
-    // Backend integration placeholder
-    alert(
-      "ご協力ありがとうございました。\n" +
-      "Thank you for your valuable feedback."
-    );
+/* ================= TRANSLATION ================= */
+function translateLive(input,target){
+  if(!input.value){
+    document.getElementById(target).textContent="";
+    return;
   }
+  fetch(GAS_URL+"?translate="+encodeURIComponent(input.value))
+    .then(r=>r.text())
+    .then(t=>{
+      document.getElementById(target).textContent="Translation preview: "+t;
+    });
+}
+
+/* ================= SUBMIT SURVEY ================= */
+function submitSurvey(){
+  alert("ご協力ありがとうございました\nThank you for your feedback");
+  location.reload();
+}
+
+/* ================= ADMIN ================= */
+function adminLogin(){
+  const pw=prompt("Admin password");
+  if(pw!=="admin123"){alert("Incorrect password");return;}
+  survey.style.display="none";
+  admin.style.display="block";
+  loadDashboard();
+}
+
+function logout(){location.reload();}
+
+/* ================= DASHBOARD ================= */
+function loadDashboard(){
+  fetch(GAS_URL+"?dashboard=1")
+    .then(r=>r.json())
+    .then(d=>{
+      kRespondents.textContent=d.respondents;
+      kComposite.textContent=d.composite;
+      aiSummary.textContent=d.summary;
+      commentList.innerHTML="";
+      d.comments.forEach(c=>{
+        commentList.innerHTML+=`<div class="comment">${c.jp}<br><small>${c.en}</small></div>`;
+      });
+    });
+}
+
+/* ================= ACTION TRACKER ================= */
+let actions=[
+  {text:"AC system review – Zone B",owner:"BM",status:"In progress"},
+  {text:"Lift peak hour study",owner:"Ops",status:"Open"}
+];
+
+function renderActions(){
+  actionsEl=document.getElementById("actions");
+  actionsEl.innerHTML="";
+  actions.forEach((a,i)=>{
+    actionsEl.innerHTML+=`
+    <div class="action-row">
+      <input value="${a.text}" onchange="actions[${i}].text=this.value">
+      <input value="${a.owner}" onchange="actions[${i}].owner=this.value">
+      <select onchange="actions[${i}].status=this.value">
+        <option ${a.status==="Open"?"selected":""}>Open</option>
+        <option ${a.status==="In progress"?"selected":""}>In progress</option>
+        <option ${a.status==="Done"?"selected":""}>Done</option>
+      </select>
+      <button onclick="actions.splice(${i},1);renderActions()">✕</button>
+    </div>`;
+  });
+}
+
+function addAction(){
+  actions.push({text:"",owner:"",status:"Open"});
+  renderActions();
+}
+
+/* ================= SURVEY CONTROL ================= */
+function startNewSurvey(){
+  fetch(GAS_URL+"?newSurvey=1")
+    .then(()=>alert("New survey started"));
+}
+
+renderActions();
 </script>
 
 </body>
