@@ -6,93 +6,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-:root{
-  --bg:#eef1ef; --card:#ffffff; --primary:#2f3a3b;
-  --accent:#6b8f8b; --border:#dfe4e1; --text:#1f2933; --muted:#6b7280;
-}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;background:var(--bg);padding:24px 16px;}
-.card{max-width:780px;margin:auto;background:var(--card);border-radius:16px;padding:32px;box-shadow:0 12px 30px rgba(0,0,0,.12);}
-h1{text-align:center;font-weight:500;}
-.subtitle{text-align:center;font-size:13px;color:var(--muted);margin-bottom:20px;}
-.section{display:none;} .section.active{display:block;}
-.progress{text-align:right;font-size:12px;color:var(--muted);}
-input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;}
-textarea{resize:none;}
-button{padding:14px;border:none;border-radius:10px;background:var(--primary);color:#fff;font-size:15px;cursor:pointer;}
-button.secondary{background:#e5e7eb;color:#374151;}
-.rating{display:flex;gap:6px;font-size:26px;margin-bottom:16px;}
-.star{cursor:pointer;color:#d1d5db;} .star.active{color:var(--accent);}
-.preview{font-size:12px;background:#f3f4f2;padding:8px;border-radius:8px;margin-bottom:10px;}
-
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
-.kpi{background:#eef4f3;padding:16px;border-radius:12px;text-align:center;}
-.kpi-value{font-size:26px;font-weight:600;}
+body{font-family:system-ui;background:#eef1ef;padding:24px}
+.card{max-width:720px;margin:auto;background:#fff;padding:32px;border-radius:16px}
+button{padding:12px 16px;border-radius:8px;border:none;background:#2f3a3b;color:#fff}
+.preview{background:#f3f4f2;padding:10px;border-radius:8px;margin-bottom:8px}
+.rating{font-size:24px}
+.star{cursor:pointer;color:#ddd}
+.star.active{color:#6b8f8b}
 </style>
 </head>
 
 <body>
 
-<!-- ================= SURVEY ================= -->
 <div class="card" id="surveyView">
-<h1>Tenant Pulse Survey</h1>
-<div class="subtitle">建物のご利用体験についてお聞かせください</div>
+<h2>Tenant Pulse Survey</h2>
+<div class="rating" data-k="overall"></div>
+<textarea id="pos" placeholder="Comment"></textarea>
+<button onclick="submitSurvey()">Submit</button>
 
-<div class="section active">
-  <div class="progress">Step 1 / 3</div>
-  <select id="role">
-    <option value="">Select / 選択</option>
-    <option value="tenant">Tenant</option>
-    <option value="visitor">Visitor</option>
-    <option value="na">Rather not say</option>
-  </select>
-  <input id="org" placeholder="Company / Tenant (optional)">
-  <input id="unit" placeholder="Unit / Floor (optional)">
-  <button onclick="next()">Next</button>
+<div style="margin-top:10px;cursor:pointer" onclick="adminLogin()">Admin login</div>
 </div>
 
-<div class="section">
-  <div class="progress">Step 2 / 3</div>
-  <div>Comfort</div><div class="rating" data-k="comfort"></div>
-  <div>Cleanliness</div><div class="rating" data-k="cleanliness"></div>
-  <div>Operations</div><div class="rating" data-k="operations"></div>
-  <div>Security</div><div class="rating" data-k="security"></div>
-  <div>Amenities</div><div class="rating" data-k="amenities"></div>
-  <div>Overall</div><div class="rating" data-k="overall"></div>
-  <button class="secondary" onclick="prev()">Back</button>
-  <button onclick="next()">Next</button>
-</div>
-
-<div class="section">
-  <div class="progress">Step 3 / 3</div>
-  <textarea id="pos" placeholder="What did you enjoy?" maxlength="140"
-    oninput="translateLive(this,'posT')"></textarea>
-  <div id="posT" class="preview"></div>
-
-  <textarea id="neg" placeholder="What can be improved?" maxlength="140"
-    oninput="translateLive(this,'negT')"></textarea>
-  <div id="negT" class="preview"></div>
-
-  <button class="secondary" onclick="prev()">Back</button>
-  <button onclick="submitSurvey()">Submit</button>
-</div>
-
-<div style="text-align:center;margin-top:12px;font-size:12px;cursor:pointer"
- onclick="adminLogin()">Admin login</div>
-</div>
-
-<!-- ================= ADMIN ================= -->
-<div class="card" id="adminView" style="display:none;">
-<h1>Admin Dashboard</h1>
-<div class="subtitle">Live survey data</div>
-
-<div class="kpis">
-  <div class="kpi"><div class="kpi-value" id="kRespondents">–</div>Respondents</div>
-  <div class="kpi"><div class="kpi-value" id="kComposite">–</div>Composite score</div>
-  <div class="kpi"><div class="kpi-value" id="kSurvey">–</div>Active survey</div>
-</div>
-
+<div class="card" id="adminView" style="display:none">
+<h2>Admin Dashboard</h2>
+<div id="status"></div>
 <div id="comments"></div>
-
 <button onclick="startNewSurvey()">Start New Survey</button>
 <button onclick="logout()">Logout</button>
 </div>
@@ -100,63 +38,52 @@ button.secondary{background:#e5e7eb;color:#374151;}
 <script>
 const GAS_URL="https://script.google.com/macros/s/AKfycbwPkwfdUP60oudF_cOScisYzPukka9gF792ky2fT2SIbgBMVXMco2Szaf9xEUDsYe2p/exec";
 
-let step=0; const sections=document.querySelectorAll(".section");
-function next(){sections[step++].classList.remove("active");sections[step].classList.add("active");}
-function prev(){sections[step--].classList.remove("active");sections[step].classList.add("active");}
-
 document.querySelectorAll(".rating").forEach(r=>{
   for(let i=1;i<=5;i++){
     const s=document.createElement("span");
-    s.textContent="★"; s.className="star";
-    s.onclick=()=>{[...r.children].forEach((x,j)=>x.classList.toggle("active",j<i));r.dataset.value=i;};
+    s.textContent="★";
+    s.className="star";
+    s.onclick=()=>{[...r.children].forEach((x,j)=>x.classList.toggle("active",j<i));r.dataset.value=i;}
     r.appendChild(s);
   }
 });
 
-function translateLive(input,target){
-  if(!input.value){document.getElementById(target).textContent="";return;}
-  fetch(GAS_URL+"?translate="+encodeURIComponent(input.value))
-    .then(r=>r.text()).then(t=>document.getElementById(target).textContent=t);
-}
-
 function submitSurvey(){
-  const scores={};
-  document.querySelectorAll(".rating").forEach(r=>scores[r.dataset.k]=Number(r.dataset.value||0));
   fetch(GAS_URL,{
     method:"POST",
     body:JSON.stringify({
       type:"submitSurvey",
-      role:role.value, org:org.value, unit:unit.value,
-      scores:scores, positive:pos.value, negative:neg.value
+      role:"tenant",
+      org:"",
+      unit:"",
+      scores:{overall:document.querySelector(".rating").dataset.value||0},
+      positive:pos.value,
+      negative:""
     })
-  }).then(()=>{alert("Thank you");location.reload();});
+  }).then(()=>alert("Submitted"));
 }
 
 function adminLogin(){
-  const pw=prompt("Admin password");
-  if(pw==="admin123"){
+  if(prompt("Admin password")==="admin123"){
     surveyView.style.display="none";
     adminView.style.display="block";
     loadDashboard();
-  } else alert("Incorrect password");
+  }
 }
 
 function loadDashboard(){
   fetch(GAS_URL+"?dashboardData=1")
     .then(r=>r.json())
     .then(d=>{
-      kRespondents.textContent=d.respondents;
-      kComposite.textContent=d.composite;
-      kSurvey.textContent=d.survey;
-      comments.innerHTML=d.comments.map(
-        c=>`<div class="preview">${c.jp}<br><small>${c.en}</small></div>`
-      ).join("");
+      status.textContent =
+        d.note || `Survey: ${d.survey} | Respondents: ${d.respondents} | Score: ${d.composite}`;
+      comments.innerHTML=d.comments.map(c=>`<div class="preview">${c.jp}<br><small>${c.en}</small></div>`).join("") ||
+        "<em>No comments yet</em>";
     });
 }
 
 function startNewSurvey(){
-  fetch(GAS_URL+"?newSurvey=1")
-    .then(()=>alert("New survey started"));
+  fetch(GAS_URL+"?newSurvey=1").then(()=>alert("New survey started"));
 }
 
 function logout(){location.reload();}
