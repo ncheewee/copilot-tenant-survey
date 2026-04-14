@@ -1,175 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>Tenant Pulse Survey</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-:root {
-  --bg:#eef1ef;
-  --card:#ffffff;
-  --primary:#2f3a3b;
-  --accent:#6b8f8b;
-  --border:#dfe4e1;
-  --text:#1f2933;
-  --muted:#6b7280;
+:root{
+  --bg:#eef1ef; --card:#ffffff; --primary:#2f3a3b;
+  --accent:#6b8f8b; --border:#dfe4e1; --muted:#6b7280;
 }
-
-body {
-  font-family: system-ui,-apple-system,"Noto Sans JP",sans-serif;
-  background: var(--bg);
-  padding: 24px;
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;
+  background:var(--bg);
+  padding:24px 16px;
 }
-
-.card {
-  max-width: 760px;
-  margin: auto;
-  background: var(--card);
-  border-radius: 16px;
-  padding: 32px;
+.card{
+  max-width:780px;
+  margin:auto;
+  background:var(--card);
+  border-radius:16px;
+  padding:32px;
+  box-shadow:0 12px 30px rgba(0,0,0,.12);
 }
-
-h1 {
-  margin-top: 0;
+h1{text-align:center;font-weight:500;}
+.subtitle{text-align:center;font-size:13px;color:var(--muted);margin-bottom:20px;}
+.section{display:none;}
+.section.active{display:block;}
+.progress{text-align:right;font-size:12px;color:var(--muted);}
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  margin-bottom:10px;
 }
-
-.section {
-  display: none;
+textarea{resize:none;}
+button{
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  background:var(--primary);
+  color:#fff;
+  font-size:15px;
+  cursor:pointer;
 }
-.section.active {
-  display: block;
+button.secondary{
+  background:#e5e7eb;
+  color:#374151;
 }
-
-.progress {
-  text-align: right;
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 12px;
+.rating{
+  display:flex;
+  gap:6px;
+  font-size:26px;
+  margin-bottom:16px;
 }
-
-input, select, textarea {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  margin-bottom: 12px;
-  font-family: inherit;
+.star{cursor:pointer;color:#d1d5db;}
+.star.active{color:var(--accent);}
+.preview{
+  font-size:12px;
+  background:#f3f4f2;
+  padding:8px;
+  border-radius:8px;
+  margin-bottom:10px;
 }
-
-textarea { resize: none; }
-
-.rating {
-  font-size: 26px;
-  margin-bottom: 16px;
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-bottom:16px;
 }
-
-.star {
-  cursor: pointer;
-  color: #d1d5db;
+.kpi{
+  background:#eef4f3;
+  padding:16px;
+  border-radius:12px;
+  text-align:center;
 }
-.star.active {
-  color: var(--accent);
-}
-
-.preview {
-  background: #f3f4f2;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  font-size: 12px;
-}
-
-.actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-button {
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  background: var(--primary);
-  color: #fff;
-  cursor: pointer;
-}
-button.secondary {
-  background: #e5e7eb;
-  color: #374151;
+.kpi-value{
+  font-size:26px;
+  font-weight:600;
 }
 </style>
 </head>
 
 <body>
 
+<!-- ================= SURVEY ================= -->
 <div class="card" id="surveyView">
-  <h1>Tenant Pulse Survey</h1>
+<h1>Tenant Pulse Survey</h1>
+<div class="subtitle">建物のご利用体験についてお聞かせください</div>
 
-  <!-- STEP 1 -->
-  <div class="section active">
-    <div class="progress">Step 1 / 3</div>
-    <h3>あなたの立場 / Your role</h3>
-
-    <select id="role">
-      <option value="">Select / 選択</option>
-      <option value="tenant">Tenant</option>
-      <option value="visitor">Visitor</option>
-      <option value="na">Rather not say</option>
-    </select>
-
-    <input id="org" placeholder="Company / Tenant (optional)">
-    <input id="unit" placeholder="Unit / Floor (optional)">
-
-    <div class="actions">
-      <span></span>
-      <button onclick="next()">Next</button>
-    </div>
-  </div>
-
-  <!-- STEP 2 -->
-  <div class="section">
-    <div class="progress">Step 2 / 3</div>
-    <h3>満足度 / Satisfaction</h3>
-
-    <div>Overall experience</div>
-    <div class="rating" data-k="overall"></div>
-
-    <div class="actions">
-      <button class="secondary" onclick="prev()">Back</button>
-      <button onclick="next()">Next</button>
-    </div>
-  </div>
-
-  <!-- STEP 3 -->
-  <div class="section">
-    <div class="progress">Step 3 / 3</div>
-    <h3>コメント / Comments</h3>
-
-    <textarea id="pos" placeholder="What did you enjoy?" maxlength="140"
-      oninput="translateLive(this,'posT')"></textarea>
-    <div id="posT" class="preview"></div>
-
-    <textarea id="neg" placeholder="What can be improved?" maxlength="140"
-      oninput="translateLive(this,'negT')"></textarea>
-    <div id="negT" class="preview"></div>
-
-    <div class="actions">
-      <button class="secondary" onclick="prev()">Back</button>
-      <button onclick="submitSurvey()">Submit</button>
-    </div>
-  </div>
-
-  <div style="margin-top:16px;font-size:12px;cursor:pointer"
-       onclick="adminLogin()">Admin login</div>
+<div class="section active">
+  <div class="progress">Step 1 / 3</div>
+  <select id="role">
+    <option value="">Select / 選択</option>
+    <option value="tenant">Tenant</option>
+    <option value="visitor">Visitor</option>
+    <option value="na">Rather not say</option>
+  </select>
+  <input id="org" placeholder="Company / Tenant (optional)">
+  <input id="unit" placeholder="Unit / Floor (optional)">
+  <button onclick="next()">Next</button>
 </div>
 
-<div class="card" id="adminView" style="display:none">
-  <h1>Admin Dashboard</h1>
-  <p id="dashboardMessage"></p>
-  <button onclick="startNewSurvey()">Start New Survey</button>
-  <button onclick="logout()">Logout</button>
+<div class="section">
+  <div class="progress">Step 2 / 3</div>
+  <div>Comfort</div><div class="rating" data-k="comfort"></div>
+  <div>Cleanliness</div><div class="rating" data-k="cleanliness"></div>
+  <div>Operations</div><div class="rating" data-k="operations"></div>
+  <div>Security</div><div class="rating" data-k="security"></div>
+  <div>Amenities</div><div class="rating" data-k="amenities"></div>
+  <div>Overall</div><div class="rating" data-k="overall"></div>
+  <button class="secondary" onclick="prev()">Back</button>
+  <button onclick="next()">Next</button>
+</div>
+
+<div class="section">
+  <div class="progress">Step 3 / 3</div>
+
+  <textarea id="pos" placeholder="What did you enjoy?" maxlength="140"
+    oninput="translateLive(this,'posT')"></textarea>
+  <div id="posT" class="preview"></div>
+
+  <textarea id="neg" placeholder="What can be improved?" maxlength="140"
+    oninput="translateLive(this,'negT')"></textarea>
+  <div id="negT" class="preview"></div>
+
+  <button class="secondary" onclick="prev()">Back</button>
+  <button onclick="submitSurvey()">Submit</button>
+</div>
+
+<div style="text-align:center;margin-top:12px;font-size:12px;cursor:pointer"
+ onclick="adminLogin()">Admin login</div>
+</div>
+
+<!-- ================= ADMIN ================= -->
+<div class="card" id="adminView" style="display:none;">
+<h1>Admin Dashboard</h1>
+<div class="subtitle">Live survey data</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="kpi-value" id="kRespondents">–</div>Respondents</div>
+  <div class="kpi"><div class="kpi-value" id="kComposite">–</div>Composite</div>
+  <div class="kpi"><div class="kpi-value" id="kSurvey">–</div>Survey</div>
+</div>
+
+<div id="comments"></div>
+
+<button onclick="startNewSurvey()">Start New Survey</button>
+<button onclick="logout()">Logout</button>
 </div>
 
 <script>
-const GAS_URL =
+const GAS_URL = "PASTE_YOUR_DEPLOYMENT_URL_HERE";
+
+let step = 0;
+const sections = document.querySelectorAll(".section");
+
+function next(){
+  sections[step].classList.remove("active");
+  step++;
